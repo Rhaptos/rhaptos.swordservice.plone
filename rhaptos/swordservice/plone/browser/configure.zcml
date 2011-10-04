@@ -1,0 +1,60 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:five="http://namespaces.zope.org/five">
+            
+    <browser:page
+        for="*"
+        name="sword"
+        class=".sword.SWORDService"
+        permission="cmf.SetOwnPassword" />
+
+    <!-- This adapts folderish objects into sword collections. Override this
+         for your own types -->
+    <adapter
+        for="Products.CMFCore.interfaces.IFolderish
+             zope.publisher.interfaces.http.IHTTPRequest"
+        provides="rhaptos.swordservice.plone.interfaces.ISWORDContentUploadAdapter"
+        factory=".sword.PloneFolderSwordAdapter" />
+
+    <!-- Adapters for ISWORDEditIRI and ISWORDServiceDocument. Folderish
+         objects are collections and have a service document, Files are
+         uploaded content and have an edit-iri -->
+    <adapter
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot
+             zope.publisher.interfaces.http.IHTTPRequest"
+        provides="rhaptos.swordservice.plone.interfaces.ISWORDServiceDocument"
+        factory=".sword.ServiceDocument" />
+
+    <adapter
+        for="Products.ATContentTypes.interface.file.IATFile
+             zope.publisher.interfaces.http.IHTTPRequest"
+        provides="rhaptos.swordservice.plone.interfaces.ISWORDEditIRI"
+        factory=".sword.EditIRI" />
+
+    <adapter
+        for="Products.ATContentTypes.interface.file.IATFile
+             zope.publisher.interfaces.http.IHTTPRequest"
+        provides="rhaptos.swordservice.plone.interfaces.ISWORDStatement"
+        factory=".sword.SWORDStatementAdapter" />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IFolderish
+             zope.publisher.interfaces.http.IHTTPRequest"
+        provides="rhaptos.swordservice.plone.interfaces.ISWORDStatementAtomAdapter"
+        factory=".sword.SWORDStatementAtomAdapter" />
+
+    <adapter
+        for="Products.ATContentTypes.interface.file.IATFile
+             zope.publisher.interfaces.http.IHTTPRequest"
+        provides="rhaptos.swordservice.plone.interfaces.ISWORDEMIRI"
+        factory=".sword.EditMedia" />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IFolderish
+             zope.publisher.interfaces.http.IHTTPRequest"
+        provides="rhaptos.swordservice.plone.interfaces.ISWORDListCollection"
+        factory=".sword.ListCollection" />
+
+</configure>
