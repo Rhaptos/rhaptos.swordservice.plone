@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '0.1'
+version = '0.1.1'
 
 setup(name='rhaptos.swordservice.plone',
       version=version,
@@ -14,9 +14,9 @@ setup(name='rhaptos.swordservice.plone',
         "Programming Language :: Python",
         ],
       keywords='',
-      author='',
-      author_email='',
-      url='http://svn.plone.org/svn/collective/',
+      author='Rhaptos Developers',
+      author_email='rhaptos@rhaptos.org',
+      url='http://rhaptos.org',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['rhaptos', 'rhaptos.swordservice'],
