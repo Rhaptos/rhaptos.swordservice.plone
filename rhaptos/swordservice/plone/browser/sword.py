@@ -44,6 +44,7 @@ from rhaptos.swordservice.plone.interfaces import ISWORDListCollection
 from rhaptos.swordservice.plone.exceptions import MediationNotAllowed
 from rhaptos.swordservice.plone.exceptions import SwordException
 from rhaptos.swordservice.plone.exceptions import ContentUnsupported
+from rhaptos.swordservice.plone.exceptions import BadRequest
 
 logger = logging.getLogger(__name__)
 
@@ -265,17 +266,23 @@ class EditIRI(object):
     def _handlePost(self):
         """ A POST fo the Edit-IRI can do one of two things. You can either add
             more metadata by posting an atom entry, or you can publish the
-            module with an empty request and In-Progress set to false. """
+            module with an empty request and In-Progress set to false.
+        """
+        context = aq_inner(self.context)
         content_type = getHeader(self.request, 'Content-Type', '')
         if content_type.startswith('application/atom+xml'):
             # Apply more metadata to the item
-            parent = self.context.aq_inner.aq_parent
+            parent = context.aq_parent
             adapter = getMultiAdapter(
                 (parent, self.request), ISWORDContentUploadAdapter)
 
             body = self.request.get('BODYFILE')
             body.seek(0)
             adapter.updateMetadata(self.context, parse(body))
+        elif content_type:
+            # A content type is provided, and its not atom+xml
+            raise BadRequest(
+                "You cannot POST content of type %s to the SE-IRI" % content_type)
 
         # If In-Progress is set to false or omitted, try to publish
         in_progress = getHeader(self.request, 'In-Progress', 'false')
@@ -283,7 +290,6 @@ class EditIRI(object):
             self._handlePublish()
             # We SHOULD return a deposit receipt, status code 200, and the
             # Edit-IRI in the Location header.
-            context = aq_inner(self.context)
             self.request.response.setHeader('Location',
                 '%s/sword' % context.absolute_url())
             self.request.response.setStatus(200)
